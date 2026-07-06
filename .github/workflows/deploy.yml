@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   build-and-push:
@@ -48,6 +48,9 @@ jobs:
             cd /home/ubuntu/app
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env
+            echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
+            echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> .env
             docker pull jeongmo02/exchange-diary:latest
             docker-compose -f docker-compose.prod.yml down
             docker-compose -f docker-compose.prod.yml up -d
