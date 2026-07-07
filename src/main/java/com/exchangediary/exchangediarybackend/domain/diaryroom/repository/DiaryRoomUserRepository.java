@@ -21,4 +21,6 @@ public interface DiaryRoomUserRepository extends JpaRepository<DiaryRoomUserEnti
 
     // 교환일기 방에 참여한 순서와 교환일기 작성 순서가 같은지 확인
     Optional<DiaryRoomUserEntity> findByDiaryRoomAndSequence(DiaryRoomEntity diaryRoom, int sequence);
+
+    DiaryRoomUserEntity findByUserAndDiaryRoom(UserEntity user, DiaryRoomEntity diaryRoom);
 }
