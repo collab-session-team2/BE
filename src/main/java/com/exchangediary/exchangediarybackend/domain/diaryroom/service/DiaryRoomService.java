@@ -3,6 +3,7 @@ package com.exchangediary.exchangediarybackend.domain.diaryroom.service;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomCreateRequest;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomJoinRequest;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomCreateResponse;
+import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomDetailResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomJoinResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomListResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.entity.DiaryRoomEntity;
@@ -169,5 +170,34 @@ public class DiaryRoomService {
                             .build();
                 })
                 .toList();
+    }
+
+    // 교환일기 방 상세 조회
+    public DiaryRoomDetailResponse diaryRoomDetail(Long userId, Long diaryRoomId) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 교환일기 방이 존재하는지 조회
+        DiaryRoomEntity diaryRoom = diaryRoomRepository.findById(diaryRoomId)
+                .orElseThrow(() -> new CustomException(DiaryRoomErrorCode.DIARY_ROOM_NOT_FOUND));
+
+        // 해당 교환일기 방 멤버인지 조회
+        if (!diaryRoomUserRepository.existsByDiaryRoomAndUser(diaryRoom, user)) {
+            throw new CustomException(DiaryRoomErrorCode.NOT_ROOM_MEMBER);
+        }
+
+        // 현재 차례인 사람 바로 조회
+        DiaryRoomUserEntity currentTurnUser = diaryRoomUserRepository.findByDiaryRoomAndSequence(diaryRoom, diaryRoom.getCurrentSequence())
+                .orElseThrow(() -> new CustomException(DiaryRoomErrorCode.DIARY_NOT_SEQUENCE));
+
+        return DiaryRoomDetailResponse.builder()
+                .diaryRoomId(diaryRoom.getDiaryRoomId())
+                .diaryRoomName(diaryRoom.getDiaryRoomName())
+                .diaryRoomImage(diaryRoom.getDiaryRoomImage())
+                .currentTurnUserName(currentTurnUser.getUser().getUserName())
+                .myTurn(currentTurnUser.getUser().getUserId().equals(userId))
+                .build();
     }
 }

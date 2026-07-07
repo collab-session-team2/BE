@@ -3,6 +3,7 @@ package com.exchangediary.exchangediarybackend.domain.diaryroom.controller;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomCreateRequest;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomJoinRequest;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomCreateResponse;
+import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomDetailResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomJoinResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomListResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.service.DiaryRoomService;
@@ -65,5 +66,19 @@ public class DiaryRoomController {
 
         // 응답 반환
         return ResponseEntity.ok(BaseResponse.success(200, "교환일기 방 전체 목록 조회 성공", response));
+    }
+
+    // 교환일기 방 상세 조회
+    @Operation(summary = "교환일기 방 상세 조회", description = "사용자가 교환일기 방 상세조회 할때 사용하는 API")
+    @GetMapping("/diary-rooms/{diaryRoomId}")
+    public ResponseEntity<BaseResponse<DiaryRoomDetailResponse>> getDiaryRoom(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("diaryRoomId") Long diaryRoomId) {
+
+        // service 호출
+        DiaryRoomDetailResponse response = diaryRoomService.diaryRoomDetail(userDetails.getUserId(), diaryRoomId);
+
+        // 응답 반환
+        return ResponseEntity.ok(BaseResponse.success(200, "교환일기 방 상세 조회 성공",  response));
     }
 }
