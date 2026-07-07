@@ -4,6 +4,7 @@ import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.Diary
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomJoinRequest;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomCreateResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomJoinResponse;
+import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomListResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.entity.DiaryRoomEntity;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.entity.DiaryRoomUserEntity;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.exception.DiaryRoomErrorCode;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -142,5 +144,30 @@ public class DiaryRoomService {
                 .diaryRoomName(diaryRoom.getDiaryRoomName())
                 .sequence(sequence)
                 .build();
+    }
+
+    // 교환일기 방 전체 목록 조회
+    public List<DiaryRoomListResponse> allDiaryRooms(Long userId) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 사용자가 참여하고 있는 방 목록 조회
+        List<DiaryRoomUserEntity> diaryRoomUsers = diaryRoomUserRepository.findByUser(user);
+
+        // 응답 반환
+        return diaryRoomUsers.stream()
+                .map(diaryRoomUser -> {
+                    DiaryRoomEntity diaryRoom = diaryRoomUser.getDiaryRoom();
+                    return DiaryRoomListResponse.builder()
+                            .diaryRoomId(diaryRoom.getDiaryRoomId())
+                            .diaryRoomName(diaryRoom.getDiaryRoomName())
+                            .diaryRoomImage(diaryRoom.getDiaryRoomImage())
+                            .currentMember(diaryRoom.getCurrentMember())
+                            .maxMember(diaryRoom.getMaxMember())
+                            .build();
+                })
+                .toList();
     }
 }
