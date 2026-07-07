@@ -47,4 +47,8 @@ public class DiaryRoomEntity extends BaseTimeEntity {
     public boolean isFull() {
         return this.currentMember >= this.maxMember;
     }
+
+    public void addExp(int exp) {
+        this.exp += exp;
+    }
 }
