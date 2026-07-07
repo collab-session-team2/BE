@@ -39,4 +39,12 @@ public class DiaryRoomEntity extends BaseTimeEntity {
 
     @Column(length = 200)
     private String diaryRoomImage;
+
+    public void increaseMember() {
+        this.currentMember += 1;
+    }
+
+    public boolean isFull() {
+        return this.currentMember >= this.maxMember;
+    }
 }
