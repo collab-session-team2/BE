@@ -55,6 +55,7 @@ public class DiaryService {
         Diary diary = Diary.builder()
                 .targetDate(LocalDate.now())
                 .title(writeDiaryRequest.getTitle())
+                .diaryRoom(diaryRoom)
                 .content(writeDiaryRequest.getContent())
                 .diaryImage("testUrl") // TODO : S3 이미지 업로드 로직 만들기
                 .sequence(diaryRoom.getCurrentSequence())
