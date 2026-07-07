@@ -3,6 +3,8 @@ package com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -19,4 +21,7 @@ public class DiaryRoomJoinResponse {
 
     @Schema(description = "참여 순번", example = "1")
     private int sequence;
+
+    @Schema(description = "방 참여 시간", example = "2026-07-07T10:40:00")
+    private LocalDateTime createdAt;
 }
