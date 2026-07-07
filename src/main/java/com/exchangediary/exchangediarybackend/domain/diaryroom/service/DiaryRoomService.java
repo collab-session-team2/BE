@@ -1,9 +1,12 @@
 package com.exchangediary.exchangediarybackend.domain.diaryroom.service;
 
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomCreateRequest;
+import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomJoinRequest;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomCreateResponse;
+import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomJoinResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.entity.DiaryRoomEntity;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.entity.DiaryRoomUserEntity;
+import com.exchangediary.exchangediarybackend.domain.diaryroom.exception.DiaryRoomErrorCode;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.repository.DiaryRoomRepository;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.repository.DiaryRoomUserRepository;
 import com.exchangediary.exchangediarybackend.domain.user.entity.UserEntity;
@@ -90,6 +93,54 @@ public class DiaryRoomService {
                 .inviteCode(savedDiaryRoom.getInviteCode())
                 .maxMember(savedDiaryRoom.getMaxMember())
                 .diaryRoomImage(savedDiaryRoom.getDiaryRoomImage())
+                .build();
+    }
+
+    // 교환일기 방 참여
+    @Transactional
+    public DiaryRoomJoinResponse diaryRoomJoin(Long userId, DiaryRoomJoinRequest request) {
+
+        // 사용자가 존재하는지 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        // 초대코드로 방 조회
+        DiaryRoomEntity diaryRoom = diaryRoomRepository.findByInviteCode(request.getInviteCode())
+                .orElseThrow(() -> new CustomException(DiaryRoomErrorCode.DIARY_ROOM_NOT_FOUND));
+
+        // 이미 방에 참여했는지 조회
+        if (diaryRoomUserRepository.existsByDiaryRoomAndUser(diaryRoom, user)) {
+            throw new CustomException(DiaryRoomErrorCode.ALREADY_JOINED);
+        }
+
+        // 인원이 방 초과했는지 확인
+        if (diaryRoom.isFull()) {
+            throw new CustomException(DiaryRoomErrorCode.DIARY_ROOM_FULL);
+        }
+
+        // 참여인원 추가
+        diaryRoom.increaseMember();
+
+        // 방 인원으로 등록
+        int sequence = diaryRoom.getCurrentMember();
+        DiaryRoomUserEntity diaryRoomUser =
+                DiaryRoomUserEntity.builder()
+                        .diaryRoom(diaryRoom)
+                        .user(user)
+                        .sequence(sequence)
+                        .build();
+
+        // DB에 저장
+        diaryRoomUserRepository.save(diaryRoomUser);
+
+        // 로그 출력
+        log.info("[DiaryRoomService] 교환일기 방 참여 완료: diaryRoomId= {}, userId= {}", diaryRoom.getDiaryRoomId(), userId);
+
+        // 응답 반환
+        return DiaryRoomJoinResponse.builder()
+                .diaryRoomId(diaryRoom.getDiaryRoomId())
+                .diaryRoomName(diaryRoom.getDiaryRoomName())
+                .sequence(sequence)
                 .build();
     }
 }
