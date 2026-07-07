@@ -6,6 +6,7 @@ import com.exchangediary.exchangediarybackend.domain.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DiaryRoomUserRepository extends JpaRepository<DiaryRoomUserEntity, Long> {
 
@@ -17,4 +18,7 @@ public interface DiaryRoomUserRepository extends JpaRepository<DiaryRoomUserEnti
 
     // 사용자가 참여한 방 목록 조회
     List<DiaryRoomUserEntity> findByUser(UserEntity user);
+
+    // 교환일기 방에 참여한 순서와 교환일기 작성 순서가 같은지 확인
+    Optional<DiaryRoomUserEntity> findByDiaryRoomAndSequence(DiaryRoomEntity diaryRoom, int sequence);
 }
