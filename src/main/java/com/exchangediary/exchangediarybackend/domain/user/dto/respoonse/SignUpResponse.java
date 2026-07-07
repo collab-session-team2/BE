@@ -19,7 +19,7 @@ public class SignUpResponse {
     @Schema(description = "사용자 이름", example = "홍길동")
     private String userName;
 
-    @Schema(description = "사용자 이메일", example = "kkk02@naver.com")
+    @Schema(description = "사용자 이메일", example = "test@example.com")
     private String email;
 
     @Schema(description = "회원가입 날짜", example = "2026-07-07T10:40:00")
