@@ -59,6 +59,7 @@ public class DiaryService {
                 .diaryImage("testUrl") // TODO : S3 이미지 업로드 로직 만들기
                 .sequence(diaryRoom.getCurrentSequence())
                 .user(user)
+                .diaryRoom(diaryRoom)
                 .build();
 
         // diaryRoom의 currentSequence 증가하는 로직
