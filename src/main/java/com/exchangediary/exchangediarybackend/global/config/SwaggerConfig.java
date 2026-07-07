@@ -36,7 +36,7 @@ public class SwaggerConfig {
                                         .bearerFormat("JWT")
                         )
                 )
-                .info(new Info().title("LikeLion API 명세서").version("1.0").description("Swagger 실습"));
+                .info(new Info().title("Exchange Diary API 명세서").version("1.0").description("Exchange Diary API"));
     }
 
     @Bean
