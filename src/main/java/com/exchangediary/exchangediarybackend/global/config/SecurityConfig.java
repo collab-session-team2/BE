@@ -40,6 +40,8 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(HttpMethod.GET, "/logs", "/health")
                                         .permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/api/users")
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated());
         return http.build();
