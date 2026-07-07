@@ -14,4 +14,7 @@ public interface DiaryRoomUserRepository extends JpaRepository<DiaryRoomUserEnti
 
     // 방에 참여한 인원 목록
     List<DiaryRoomUserEntity> findByDiaryRoom(DiaryRoomEntity diaryRoom);
+
+    // 사용자가 참여한 방 목록 조회
+    List<DiaryRoomUserEntity> findByUser(UserEntity user);
 }

@@ -4,6 +4,7 @@ import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.Diary
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.request.DiaryRoomJoinRequest;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomCreateResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomJoinResponse;
+import com.exchangediary.exchangediarybackend.domain.diaryroom.dto.response.DiaryRoomListResponse;
 import com.exchangediary.exchangediarybackend.domain.diaryroom.service.DiaryRoomService;
 import com.exchangediary.exchangediarybackend.global.common.BaseResponse;
 import com.exchangediary.exchangediarybackend.global.security.CustomUserDetails;
@@ -13,10 +14,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,9 +40,9 @@ public class DiaryRoomController {
         return ResponseEntity.ok(BaseResponse.success(201, "교환일기 방 생성 성공", response));
     }
 
-    // 교환일기 방 參與
+    // 교환일기 방 참여
     @Operation(summary = "교환일기 방 참여", description = "초대코드를 입력받아 교환일기 방에 참여하는 API")
-    @PostMapping("/join")
+    @PostMapping("/diary-rooms/join")
     public ResponseEntity<BaseResponse<DiaryRoomJoinResponse>> joinDiaryRoom(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody DiaryRoomJoinRequest request) {
@@ -52,5 +52,18 @@ public class DiaryRoomController {
 
         // 응답 반환
         return ResponseEntity.ok(BaseResponse.success(200, "교환일기 방 참여 성공", response));
+    }
+
+    // 교환일기 방 전체 목록 조회
+    @Operation(summary = "교환일기 방 전체 목록 조회", description = "사용자가 참여하고 있는 교환일기 방 전체 목록 조회하는 API")
+    @GetMapping("/diary-rooms")
+    public ResponseEntity<BaseResponse<List<DiaryRoomListResponse>>> getAllDiaryRooms(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // service 호출
+        List<DiaryRoomListResponse> response = diaryRoomService.allDiaryRooms(userDetails.getUserId());
+
+        // 응답 반환
+        return ResponseEntity.ok(BaseResponse.success(200, "교환일기 방 전체 목록 조회 성공", response));
     }
 }
